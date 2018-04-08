@@ -15,8 +15,9 @@ namespace LMYC.Models
 
         public string EndDate { get; set; }
 
-        [ForeignKey("User")]
+        [ForeignKey("ApplicationUser")]
         [Display(Name="Created By")]
+        [ScaffoldColumn(false)]
         public string CreatedBy { get; set; }
 
         [ScaffoldColumn(false)]
@@ -27,7 +28,7 @@ namespace LMYC.Models
         public int ReservedBoat { get; set; }
 
         [ScaffoldColumn(false)]
-        public Boat Boat { get; set; }
+        public ICollection<Boat> Boats { get; set; }
 
     }
 }

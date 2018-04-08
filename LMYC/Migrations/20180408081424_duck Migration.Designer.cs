@@ -11,9 +11,10 @@ using System;
 namespace LMYC.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180408081424_duck Migration")]
+    partial class duckMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,8 +70,6 @@ namespace LMYC.Migrations
 
                     b.Property<string>("Province")
                         .HasMaxLength(50);
-
-                    b.Property<string>("Roles");
 
                     b.Property<int>("SailingExperience");
 
