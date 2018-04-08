@@ -40,7 +40,7 @@ namespace LMYC
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ApplicationDbContext context)
         {
             if (env.IsDevelopment())
             {
@@ -53,6 +53,9 @@ namespace LMYC
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            DummyData.Initialize(context);
+
+
             app.UseStaticFiles();
 
             app.UseAuthentication();
@@ -63,6 +66,7 @@ namespace LMYC
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
         }
     }
 }
