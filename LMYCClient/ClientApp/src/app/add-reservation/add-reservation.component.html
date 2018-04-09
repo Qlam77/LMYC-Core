@@ -14,5 +14,5 @@
       <option class='option'*ngFor='let boat of boats' [value]='boat.boatId'>{{boat.boatName}}</option>
     </select>
   </p>
-  <button [disabled]='!boats' (click)='add(reservation)'>Create Reservation</button>
+  <button [disabled]='disableSubmit()' (click)='add(reservation)' [ngClass]="{'disabled-button': disableSubmit()}">Create Reservation</button>
 </div>

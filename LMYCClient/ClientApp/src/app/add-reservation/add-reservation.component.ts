@@ -34,6 +34,14 @@ export class AddReservationComponent implements OnInit {
     this.reservation.reservedBoat = event;
   }
 
+  disableSubmit() {
+    return (!this.boats 
+      || !this.reservation.startDate 
+      || !this.reservation.endDate 
+      || (this.reservation.startDate > this.reservation.endDate) 
+      || !this.reservation.reservedBoat)
+  }
+
   add(newReservation: Reservation): void {
     if (!newReservation) return;
     this.reservationService.create(newReservation)
