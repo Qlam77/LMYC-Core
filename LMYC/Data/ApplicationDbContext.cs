@@ -15,6 +15,7 @@ namespace LMYC.Data
         {
         }
 
+        public DbSet<ApplicationUser> AppUsers { get; set; }
         public DbSet<Boat> Boats { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
 

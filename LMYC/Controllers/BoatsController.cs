@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LMYC.Data;
 using LMYC.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LMYC.Controllers
 {
@@ -22,8 +24,7 @@ namespace LMYC.Controllers
         // GET: Boats
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Boats.Include(b => b.User);
-            return View(await applicationDbContext.ToListAsync());
+            return View(await _context.Boats.ToListAsync());
         }
 
         // GET: Boats/Details/5
@@ -35,7 +36,6 @@ namespace LMYC.Controllers
             }
 
             var boat = await _context.Boats
-                .Include(b => b.User)
                 .SingleOrDefaultAsync(m => m.BoatId == id);
             if (boat == null)
             {
@@ -44,11 +44,10 @@ namespace LMYC.Controllers
 
             return View(boat);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: Boats/Create
         public IActionResult Create()
         {
-            ViewData["CreatedBy"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -61,11 +60,11 @@ namespace LMYC.Controllers
         {
             if (ModelState.IsValid)
             {
+                boat.CreatedBy = User.Identity.GetUserId();
                 _context.Add(boat);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreatedBy"] = new SelectList(_context.Users, "Id", "Id", boat.CreatedBy);
             return View(boat);
         }
 
@@ -82,7 +81,6 @@ namespace LMYC.Controllers
             {
                 return NotFound();
             }
-            ViewData["CreatedBy"] = new SelectList(_context.Users, "Id", "Id", boat.CreatedBy);
             return View(boat);
         }
 
@@ -118,7 +116,6 @@ namespace LMYC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreatedBy"] = new SelectList(_context.Users, "Id", "Id", boat.CreatedBy);
             return View(boat);
         }
 
@@ -131,7 +128,6 @@ namespace LMYC.Controllers
             }
 
             var boat = await _context.Boats
-                .Include(b => b.User)
                 .SingleOrDefaultAsync(m => m.BoatId == id);
             if (boat == null)
             {

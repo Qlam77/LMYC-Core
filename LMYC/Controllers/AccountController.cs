@@ -13,6 +13,8 @@ using Microsoft.Extensions.Options;
 using LMYC.Models;
 using LMYC.Models.AccountViewModels;
 using LMYC.Services;
+using System.Text.RegularExpressions;
+using System.Net;
 
 namespace LMYC.Controllers
 {
@@ -20,17 +22,20 @@ namespace LMYC.Controllers
     [Route("[controller]/[action]")]
     public class AccountController : Controller
     {
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
         public AccountController(
+            RoleManager<IdentityRole> roleManager,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ILogger<AccountController> logger)
         {
+            _roleManager = roleManager;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
@@ -61,7 +66,8 @@ namespace LMYC.Controllers
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var userInDb = await _userManager.FindByEmailAsync(model.Email);
+                var result = await _signInManager.PasswordSignInAsync(userInDb.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
@@ -224,6 +230,7 @@ namespace LMYC.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(user, "Member");
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -436,6 +443,74 @@ namespace LMYC.Controllers
         {
             return View();
         }
+
+
+
+        [Authorize(Roles = "Admin")]
+        // GET: Account/Edit/5
+        public async Task<IActionResult> Edit()
+        {
+            return View();
+        }
+
+        // POST: Account/Edit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(String NewRole)
+        {
+            if(NewRole != null) { 
+                var result = await _roleManager.FindByNameAsync(NewRole);
+                if (result == null)
+                {
+                    var create = await _roleManager.CreateAsync(new IdentityRole(NewRole));
+                }
+                return RedirectToAction("Index", "ApplicationUsers", null);
+            } else { 
+                return StatusCode((int)(HttpStatusCode.Forbidden), "Invalid Action.");
+            }
+        }
+
+
+        [Authorize(Roles = "Admin")]
+        // GET: Account/Remove/5
+        public async Task<IActionResult> Remove()
+        {
+            UserAndRolesHelper userAndRoleHelper = new UserAndRolesHelper();
+            userAndRoleHelper.ThirdTable = _roleManager.Roles.ToList();
+            IdentityRole adminRole = new IdentityRole();
+            foreach (var item in userAndRoleHelper.ThirdTable)
+            {
+                if(item.Name == "Admin")
+                {
+                    adminRole = item;
+                    userAndRoleHelper.ThirdTable.Remove(adminRole);
+                    break;
+                }
+            }
+            return View(userAndRoleHelper);
+        }
+
+        // POST: Account/Remove/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Remove(String RemRole)
+        {
+            if(RemRole != null || RemRole == "Admin") { 
+                var result = await _roleManager.FindByNameAsync(RemRole);
+                if(result != null)
+                {
+                    var remove = await _roleManager.DeleteAsync(result);
+                }
+                return RedirectToAction("Index", "ApplicationUsers", null);
+            } else
+            {
+                return StatusCode((int)(HttpStatusCode.Forbidden), "Invalid Action.");
+            }
+        }
+
+
 
         #region Helpers
 

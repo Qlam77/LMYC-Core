@@ -1,0 +1,53 @@
+﻿@model LMYC.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<h4>ApplicationUser</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+                <input type="hidden" asp-for="Firstname" class="form-control" />
+                <input type="hidden" asp-for="LastName" class="form-control" />
+                <input type="hidden" asp-for="Street" class="form-control" />
+                <input type="hidden" asp-for="City" class="form-control" />
+                <input type="hidden" asp-for="Province" class="form-control" />
+                <input type="hidden" asp-for="PostalCode" class="form-control" />
+                <input type="hidden" asp-for="Country" class="form-control" />
+                <input type="hidden" asp-for="MobileNumber" class="form-control" />
+                <input type="hidden" asp-for="SailingExperience" class="form-control" />
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="UserName" class="form-control" />
+                <input type="hidden" asp-for="NormalizedUserName" class="form-control" />
+                <input type="hidden" asp-for="Email" class="form-control" />
+                <input type="hidden" asp-for="NormalizedEmail" class="form-control" />
+                <input type="hidden" asp-for="EmailConfirmed" />
+                <input type="hidden" asp-for="PasswordHash" class="form-control" />
+                <input type="hidden" asp-for="SecurityStamp" class="form-control" />
+                <input type="hidden" asp-for="ConcurrencyStamp" class="form-control" />
+                <input type="hidden" asp-for="PhoneNumber" class="form-control" />
+                <input type="hidden" asp-for="PhoneNumberConfirmed" />
+                <input type="hidden" asp-for="TwoFactorEnabled" />
+                <input type="hidden" asp-for="LockoutEnd" class="form-control" />
+                <input type="hidden" asp-for="LockoutEnabled" />
+                <input type="hidden" asp-for="AccessFailedCount" class="form-control" />
+                Roles
+                @Html.DropDownListFor(x => x.Roles, Model.allUserRoles, "-- Select Role --")
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 
-namespace LMYC.Migrations
+namespace LMYCWeb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -17,8 +17,7 @@ namespace LMYC.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "2.0.1-rtm-125");
 
             modelBuilder.Entity("LMYC.Models.ApplicationUser", b =>
                 {
@@ -70,7 +69,7 @@ namespace LMYC.Migrations
                     b.Property<string>("Province")
                         .HasMaxLength(50);
 
-                    b.Property<string>("Role");
+                    b.Property<string>("Roles");
 
                     b.Property<int>("SailingExperience");
 
@@ -91,8 +90,7 @@ namespace LMYC.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -107,6 +105,8 @@ namespace LMYC.Migrations
 
                     b.Property<string>("CreatedBy");
 
+                    b.Property<string>("CreatorId");
+
                     b.Property<double>("LengthInFeet");
 
                     b.Property<string>("Make")
@@ -116,11 +116,15 @@ namespace LMYC.Migrations
 
                     b.Property<string>("RecordCreationDate");
 
+                    b.Property<int?>("ReservationId");
+
                     b.Property<int>("Year");
 
                     b.HasKey("BoatId");
 
-                    b.HasIndex("CreatedBy");
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("ReservationId");
 
                     b.ToTable("Boats");
                 });
@@ -132,6 +136,8 @@ namespace LMYC.Migrations
 
                     b.Property<string>("CreatedBy");
 
+                    b.Property<string>("CreatorId");
+
                     b.Property<string>("EndDate");
 
                     b.Property<int>("ReservedBoat");
@@ -140,9 +146,7 @@ namespace LMYC.Migrations
 
                     b.HasKey("ReservationId");
 
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("ReservedBoat");
+                    b.HasIndex("CreatorId");
 
                     b.ToTable("Reservations");
                 });
@@ -165,8 +169,7 @@ namespace LMYC.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
                 });
@@ -257,21 +260,20 @@ namespace LMYC.Migrations
 
             modelBuilder.Entity("LMYC.Models.Boat", b =>
                 {
-                    b.HasOne("LMYC.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy");
+                    b.HasOne("LMYC.Models.ApplicationUser", "Creator")
+                        .WithMany("Boats")
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("LMYC.Models.Reservation")
+                        .WithMany("Boats")
+                        .HasForeignKey("ReservationId");
                 });
 
             modelBuilder.Entity("LMYC.Models.Reservation", b =>
                 {
-                    b.HasOne("LMYC.Models.ApplicationUser", "User")
+                    b.HasOne("LMYC.Models.ApplicationUser", "Creator")
                         .WithMany()
-                        .HasForeignKey("CreatedBy");
-
-                    b.HasOne("LMYC.Models.Boat", "Boat")
-                        .WithMany()
-                        .HasForeignKey("ReservedBoat")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CreatorId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

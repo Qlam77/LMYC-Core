@@ -31,12 +31,10 @@ namespace LMYC.Models
 
         public string RecordCreationDate { get; set; }
 
-        [ForeignKey("User")]
+        [ForeignKey("ApplicationUser")]
+        [Display(Name ="Created By")]
         [ScaffoldColumn(false)]
-        [Display(Name = "Created By")]
         public string CreatedBy { get; set; }
-
-        [ScaffoldColumn(false)]
-        public ApplicationUser User { get; set; }
+        public virtual ApplicationUser Creator { get; set; }
     }
 }

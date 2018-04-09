@@ -10,6 +10,7 @@ namespace LMYC.Models.AccountViewModels
     {
         [Required]
         [EmailAddress]
+        [Display(Name = "Email")]
         public string Email { get; set; }
 
         [Required]

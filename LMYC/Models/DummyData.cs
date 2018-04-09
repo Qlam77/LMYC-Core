@@ -1,4 +1,7 @@
 ﻿using LMYC.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -24,7 +27,7 @@ namespace LMYC.Models
                     Make = "Speedboat",
                     Year = 2014,
                     RecordCreationDate = dateFormat,
-                    //CreatedBy = "1",
+                    CreatedBy = "1",
                 });
 
                 db.Boats.Add(new Boat
@@ -35,7 +38,7 @@ namespace LMYC.Models
                     Make = "Medium Speedboat",
                     Year = 2016,
                     RecordCreationDate = dateFormat,
-                    //CreatedBy = "1",
+                    CreatedBy = "1",
                 });
 
                 db.Boats.Add(new Boat
@@ -46,9 +49,9 @@ namespace LMYC.Models
                     Make = "Maximum Speedboat",
                     Year = 2004,
                     RecordCreationDate = dateFormat,
-                    //CreatedBy = "2",
+                    CreatedBy = "2",
                 });
-
+                
                 db.SaveChanges();
             }
         }

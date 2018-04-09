@@ -1,11 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 using System.Collections.Generic;
 
-namespace LMYC.Migrations
+namespace LMYCWeb.Migrations
 {
-    public partial class FirstMigration : Migration
+    public partial class NewMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -46,7 +45,7 @@ namespace LMYC.Migrations
                     PhoneNumberConfirmed = table.Column<bool>(nullable: false),
                     PostalCode = table.Column<string>(nullable: true),
                     Province = table.Column<string>(maxLength: 50, nullable: true),
-                    Role = table.Column<string>(nullable: true),
+                    Roles = table.Column<string>(nullable: true),
                     SailingExperience = table.Column<int>(nullable: false),
                     SecurityStamp = table.Column<string>(nullable: true),
                     Street = table.Column<string>(maxLength: 50, nullable: true),
@@ -63,7 +62,7 @@ namespace LMYC.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true),
                     RoleId = table.Column<string>(nullable: false)
@@ -84,7 +83,7 @@ namespace LMYC.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: false)
@@ -165,27 +164,58 @@ namespace LMYC.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Reservations",
+                columns: table => new
+                {
+                    ReservationId = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CreatedBy = table.Column<string>(nullable: true),
+                    CreatorId = table.Column<string>(nullable: true),
+                    EndDate = table.Column<string>(nullable: true),
+                    ReservedBoat = table.Column<int>(nullable: false),
+                    StartDate = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reservations", x => x.ReservationId);
+                    table.ForeignKey(
+                        name: "FK_Reservations_AspNetUsers_CreatorId",
+                        column: x => x.CreatorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Boats",
                 columns: table => new
                 {
                     BoatId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     BoatName = table.Column<string>(maxLength: 50, nullable: true),
                     CreatedBy = table.Column<string>(nullable: true),
+                    CreatorId = table.Column<string>(nullable: true),
                     LengthInFeet = table.Column<double>(nullable: false),
                     Make = table.Column<string>(maxLength: 50, nullable: true),
                     Picture = table.Column<string>(nullable: true),
                     RecordCreationDate = table.Column<string>(nullable: true),
+                    ReservationId = table.Column<int>(nullable: true),
                     Year = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Boats", x => x.BoatId);
                     table.ForeignKey(
-                        name: "FK_Boats_AspNetUsers_CreatedBy",
-                        column: x => x.CreatedBy,
+                        name: "FK_Boats_AspNetUsers_CreatorId",
+                        column: x => x.CreatorId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Boats_Reservations_ReservationId",
+                        column: x => x.ReservationId,
+                        principalTable: "Reservations",
+                        principalColumn: "ReservationId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -198,8 +228,7 @@ namespace LMYC.Migrations
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true,
-                filter: "[NormalizedName] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -225,13 +254,22 @@ namespace LMYC.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Boats_CreatedBy",
+                name: "IX_Boats_CreatorId",
                 table: "Boats",
-                column: "CreatedBy");
+                column: "CreatorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Boats_ReservationId",
+                table: "Boats",
+                column: "ReservationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reservations_CreatorId",
+                table: "Reservations",
+                column: "CreatorId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -256,6 +294,9 @@ namespace LMYC.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Reservations");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

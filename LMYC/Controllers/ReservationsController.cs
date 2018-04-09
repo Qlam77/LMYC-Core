@@ -7,8 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LMYC.Data;
 using LMYC.Models;
+using Microsoft.AspNet.Identity;
 
-namespace LMYC.Controllers
+namespace LMYCWeb.Controllers
 {
     public class ReservationsController : Controller
     {
@@ -22,8 +23,7 @@ namespace LMYC.Controllers
         // GET: Reservations
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Reservations.Include(r => r.Boat).Include(r => r.User);
-            return View(await applicationDbContext.ToListAsync());
+            return View(await _context.Reservations.ToListAsync());
         }
 
         // GET: Reservations/Details/5
@@ -35,8 +35,6 @@ namespace LMYC.Controllers
             }
 
             var reservation = await _context.Reservations
-                .Include(r => r.Boat)
-                .Include(r => r.User)
                 .SingleOrDefaultAsync(m => m.ReservationId == id);
             if (reservation == null)
             {
@@ -49,8 +47,6 @@ namespace LMYC.Controllers
         // GET: Reservations/Create
         public IActionResult Create()
         {
-            ViewData["ReservedBoat"] = new SelectList(_context.Boats, "BoatId", "BoatId");
-            ViewData["CreatedBy"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -59,16 +55,15 @@ namespace LMYC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ReservationId,StartDate,EndDate,CreatedBy,ReservedBoat")] Reservation reservation)
+        public async Task<IActionResult> Create([Bind("ReservationId,StartDate,EndDate,ReservedBoat")] Reservation reservation)
         {
             if (ModelState.IsValid)
             {
+                reservation.CreatedBy = User.Identity.GetUserId();
                 _context.Add(reservation);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ReservedBoat"] = new SelectList(_context.Boats, "BoatId", "BoatId", reservation.ReservedBoat);
-            ViewData["CreatedBy"] = new SelectList(_context.Users, "Id", "Id", reservation.CreatedBy);
             return View(reservation);
         }
 
@@ -85,8 +80,6 @@ namespace LMYC.Controllers
             {
                 return NotFound();
             }
-            ViewData["ReservedBoat"] = new SelectList(_context.Boats, "BoatId", "BoatId", reservation.ReservedBoat);
-            ViewData["CreatedBy"] = new SelectList(_context.Users, "Id", "Id", reservation.CreatedBy);
             return View(reservation);
         }
 
@@ -95,7 +88,7 @@ namespace LMYC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ReservationId,StartDate,EndDate,CreatedBy,ReservedBoat")] Reservation reservation)
+        public async Task<IActionResult> Edit(int id, [Bind("ReservationId,StartDate,EndDate,ReservedBoat")] Reservation reservation)
         {
             if (id != reservation.ReservationId)
             {
@@ -122,8 +115,6 @@ namespace LMYC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ReservedBoat"] = new SelectList(_context.Boats, "BoatId", "BoatId", reservation.ReservedBoat);
-            ViewData["CreatedBy"] = new SelectList(_context.Users, "Id", "Id", reservation.CreatedBy);
             return View(reservation);
         }
 
@@ -136,8 +127,6 @@ namespace LMYC.Controllers
             }
 
             var reservation = await _context.Reservations
-                .Include(r => r.Boat)
-                .Include(r => r.User)
                 .SingleOrDefaultAsync(m => m.ReservationId == id);
             if (reservation == null)
             {
