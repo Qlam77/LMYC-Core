@@ -6,15 +6,18 @@
       <th>StartDate</th>
       <th>EndDate</th>
       <th>Boat</th>
-      <th>CreatedBy</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let reservation of reservations">
       <td>{{ reservation.startDate }}</td>
       <td>{{ reservation.endDate }}</td>
-      <td>{{ reservation.reservedBoat }}</td>
-      <td>{{ reservation.createdBy }}</td>
+      <td>{{ getBoatName(reservation.reservedBoat) }}</td>
     </tr>
   </tbody>
 </table>
+
+<a [routerLink]='["/reservation/add"]'>
+  <button><span class='glyphicon glyphicon-th-list'></span> Reservation</button>
+</a>
+
