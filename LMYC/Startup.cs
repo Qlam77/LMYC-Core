@@ -26,12 +26,20 @@ namespace LMYC
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            //services.AddIdentity<ApplicationUser, IdentityRole>()
+            //    .AddEntityFrameworkStores<ApplicationDbContext>()
+            //    .AddDefaultTokenProviders();
+
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
@@ -76,8 +84,8 @@ namespace LMYC
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
             //comment out on first update
-            //CreateRoles(serviceProvider).Wait();
-            //DummyData.Initialize(context);
+            CreateRoles(serviceProvider).Wait();
+            DummyData.Initialize(context);
         }
 
         private async Task CreateRoles(IServiceProvider serviceProvider)
