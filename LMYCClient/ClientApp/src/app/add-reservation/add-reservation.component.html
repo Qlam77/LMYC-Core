@@ -1,0 +1,18 @@
+<div>
+  <p><label>Start Date: </label>
+    <input [matDatepicker]="startPicker" placeholder="Choose a date" [(ngModel)]="reservation.startDate">
+    <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+    <mat-datepicker #startPicker></mat-datepicker>
+  </p>
+  <p><label>End Date: </label>
+    <input [matDatepicker]="endPicker" placeholder="Choose a date" [(ngModel)]="reservation.endDate">
+    <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+    <mat-datepicker #endPicker></mat-datepicker>
+  </p>
+  <p><label>Reserved Boat: </label>
+    <select class='select-option' required [(ngModel)]='selectedBoat' (ngModelChange)='selectBoat($event)'>
+      <option class='option'*ngFor='let boat of boats' [value]='boat.boatId'>{{boat.boatName}}</option>
+    </select>
+  </p>
+  <button [disabled]='!boats' (click)='add(reservation)'>Create Reservation</button>
+</div>
