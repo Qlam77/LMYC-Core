@@ -36,11 +36,21 @@ namespace LMYC
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAnyOrigin",
+                    builder => builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                );
+            });
+
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider,ApplicationDbContext context)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider, ApplicationDbContext context)
         {
             if (env.IsDevelopment())
             {
@@ -57,6 +67,8 @@ namespace LMYC
 
             app.UseAuthentication();
 
+            app.UseCors("AllowAnyOrigin");
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -64,8 +76,8 @@ namespace LMYC
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
             //comment out on first update
-            CreateRoles(serviceProvider).Wait();
-            DummyData.Initialize(context);
+            //CreateRoles(serviceProvider).Wait();
+            //DummyData.Initialize(context);
         }
 
         private async Task CreateRoles(IServiceProvider serviceProvider)
@@ -96,7 +108,7 @@ namespace LMYC
             };
             var _user = await _userManager.FindByEmailAsync("a@a.a");
 
-            if(_user == null)
+            if (_user == null)
             {
                 var createUser = await _userManager.CreateAsync(user1, "P@$$w0rd");
                 if (createUser.Succeeded)

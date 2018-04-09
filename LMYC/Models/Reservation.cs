@@ -16,12 +16,10 @@ namespace LMYC.Models
         public string EndDate { get; set; }
 
         [ForeignKey("ApplicationUser")]
-        [Display(Name="Created By")]
+        [Display(Name = "Created By")]
         [ScaffoldColumn(false)]
         public string CreatedBy { get; set; }
-
-        [ScaffoldColumn(false)]
-        public ApplicationUser User { get; set; }
+        public virtual ApplicationUser Creator { get; set; }
 
         [ForeignKey("Boat")]
         [Display(Name = "Reserved Boat")]

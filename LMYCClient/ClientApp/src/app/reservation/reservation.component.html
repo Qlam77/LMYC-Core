@@ -1,0 +1,20 @@
+<p *ngIf="!reservations"><em>Loading...</em></p>
+
+<table class='table' *ngIf="reservations">
+  <thead>
+    <tr>
+      <th>StartDate</th>
+      <th>EndDate</th>
+      <th>Boat</th>
+      <th>CreatedBy</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let reservation of reservations">
+      <td>{{ reservation.startDate }}</td>
+      <td>{{ reservation.endDate }}</td>
+      <td>{{ reservation.reservedBoat }}</td>
+      <td>{{ reservation.createdBy }}</td>
+    </tr>
+  </tbody>
+</table>

@@ -9,7 +9,7 @@ using LMYC.Data;
 using LMYC.Models;
 using Microsoft.AspNet.Identity;
 
-namespace LMYC.Controllers
+namespace LMYCWeb.Controllers
 {
     public class ReservationsController : Controller
     {
